@@ -18,9 +18,22 @@ body {
   border-radius: 10px;
 }
 
-img {
+.portrait {
   width: 100%;
+  height: 200px;
   border-radius: 8px;
+  background: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-size: 40px;
+}
+
+.portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .nome {
@@ -50,7 +63,6 @@ img {
   color: #ff5555;
 }
 
-/* glitch quando alto */
 .glitch {
   animation: glitch 0.2s infinite;
 }
@@ -67,7 +79,9 @@ img {
 
 <body>
 <div class="container" id="container">
-  <img id="portrait">
+  
+  <div class="portrait" id="portrait"></div>
+
   <div class="nome" id="nome"></div>
 
   <div class="barra">
@@ -75,6 +89,7 @@ img {
   </div>
 
   <div class="status" id="status"></div>
+
 </div>
 
 <script>
@@ -82,7 +97,19 @@ async function atualizar() {
   const res = await fetch("data.json?t=" + new Date().getTime());
   const data = await res.json();
 
-  document.getElementById("portrait").src = data.imagem;
+  const portrait = document.getElementById("portrait");
+  portrait.innerHTML = "";
+
+  // 👇 SE TIVER IMAGEM
+  if (data.imagem && data.imagem !== "") {
+    const img = document.createElement("img");
+    img.src = data.imagem + "?t=" + new Date().getTime();
+    portrait.appendChild(img);
+  } else {
+    // 👇 SE NÃO TIVER IMAGEM → avatar automático
+    portrait.innerText = data.nome.charAt(0).toUpperCase();
+  }
+
   document.getElementById("nome").innerText = data.nome;
 
   let insanidade = data.insanidade;
@@ -91,7 +118,6 @@ async function atualizar() {
   document.getElementById("barra").style.width = porcentagem + "%";
 
   let status = "Estável";
-
   if (insanidade >= 3) status = "Instável";
   if (insanidade >= 5) status = "CRÍTICO";
 
@@ -99,7 +125,6 @@ async function atualizar() {
 
   const container = document.getElementById("container");
 
-  // efeito glitch
   if (insanidade >= 5) {
     container.classList.add("glitch");
   } else {
