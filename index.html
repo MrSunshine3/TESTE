@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body style="margin:0; background:transparent;">
+
+<img id="portrait" width="300">
+
+<script>
+async function atualizar() {
+  const res = await fetch("data.json");
+  const data = await res.json();
+
+  document.getElementById("portrait").src = data.imagem;
+}
+
+setInterval(atualizar, 2000);
+</script>
+
+</body>
+</html>
