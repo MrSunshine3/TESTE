@@ -1,18 +1,113 @@
 <!DOCTYPE html>
 <html>
-<body style="margin:0; background:transparent;">
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+  margin: 0;
+  background: transparent;
+  font-family: Arial, sans-serif;
+  color: white;
+}
 
-<img id="portrait" width="300">
+.container {
+  width: 300px;
+  padding: 10px;
+  background: rgba(0,0,0,0.5);
+  border: 2px solid red;
+  border-radius: 10px;
+}
+
+img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.nome {
+  font-size: 18px;
+  margin-top: 5px;
+}
+
+.barra {
+  width: 100%;
+  height: 12px;
+  background: #222;
+  margin-top: 8px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.barra-fill {
+  height: 100%;
+  background: red;
+  width: 0%;
+  transition: 0.3s;
+}
+
+.status {
+  font-size: 12px;
+  margin-top: 5px;
+  color: #ff5555;
+}
+
+/* glitch quando alto */
+.glitch {
+  animation: glitch 0.2s infinite;
+}
+
+@keyframes glitch {
+  0% { transform: translate(0px, 0px); }
+  25% { transform: translate(2px, -2px); }
+  50% { transform: translate(-2px, 2px); }
+  75% { transform: translate(2px, 2px); }
+  100% { transform: translate(0px, 0px); }
+}
+</style>
+</head>
+
+<body>
+<div class="container" id="container">
+  <img id="portrait">
+  <div class="nome" id="nome"></div>
+
+  <div class="barra">
+    <div class="barra-fill" id="barra"></div>
+  </div>
+
+  <div class="status" id="status"></div>
+</div>
 
 <script>
 async function atualizar() {
-  const res = await fetch("data.json");
+  const res = await fetch("data.json?t=" + new Date().getTime());
   const data = await res.json();
 
   document.getElementById("portrait").src = data.imagem;
+  document.getElementById("nome").innerText = data.nome;
+
+  let insanidade = data.insanidade;
+  let porcentagem = (insanidade / 6) * 100;
+
+  document.getElementById("barra").style.width = porcentagem + "%";
+
+  let status = "Estável";
+
+  if (insanidade >= 3) status = "Instável";
+  if (insanidade >= 5) status = "CRÍTICO";
+
+  document.getElementById("status").innerText = status;
+
+  const container = document.getElementById("container");
+
+  // efeito glitch
+  if (insanidade >= 5) {
+    container.classList.add("glitch");
+  } else {
+    container.classList.remove("glitch");
+  }
 }
 
-setInterval(atualizar, 2000);
+setInterval(atualizar, 1000);
 </script>
 
 </body>
